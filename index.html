@@ -1351,7 +1351,7 @@
             <div class="modal-header">
                 <div class="modal-title">
                     <span class="writing-icon">✍️</span>
-                    Nhận xét bài viết
+                    Nhận xét tổng quan
                     <button class="pdf-export-btn" onclick="generateShareLink()">
                         🔗 Copy link
                     </button>
@@ -1422,7 +1422,7 @@
             <div class="modal-header">
                 <div class="modal-title">
                     <span class="writing-icon">📊</span>
-                    Nhận xét tổng quan HSK2
+                    Nhận xét tổng quan
                     <button class="pdf-export-btn" onclick="generateShareLinkHSK2()">
                         🔗 Copy link
                     </button>
@@ -3804,7 +3804,7 @@ Câu trả lời: ${rowData.answersText}
                 // Copy vào clipboard
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(shareUrl).then(() => {
-                        alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                        alert(`✅ Đã copy link thành công!`);
                     }).catch(() => {
                         // Fallback
                         const textArea = document.createElement('textarea');
@@ -3815,7 +3815,7 @@ Câu trả lời: ${rowData.answersText}
                         textArea.select();
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
-                        alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                        alert(`✅ Đã copy link thành công!`);
                     });
                 } else {
                     // Fallback cho trình duyệt cũ
@@ -3827,7 +3827,7 @@ Câu trả lời: ${rowData.answersText}
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                    alert(`✅ Đã copy link thành công!`);
                 }
                 
             } catch (error) {
