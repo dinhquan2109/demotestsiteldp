@@ -3393,41 +3393,66 @@ Câu trả lời: ${rowData.answersText}
         }
 
         function displayTestResultFromScore(score) {
-            if (!score || score === 'N/A' || score === null || score === undefined) {
-                document.getElementById('testResultSection').style.display = 'none';
-                return;
+            try {
+                if (!score || score === 'N/A' || score === null || score === undefined) {
+                    const testResultSection = document.getElementById('testResultSection');
+                    if (testResultSection) {
+                        testResultSection.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                const numericScore = parseInt(score);
+                if (isNaN(numericScore)) {
+                    const testResultSection = document.getElementById('testResultSection');
+                    if (testResultSection) {
+                        testResultSection.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                const totalScoreElement = document.getElementById('totalScore');
+                if (totalScoreElement) {
+                    totalScoreElement.textContent = numericScore;
+                }
+                
+                let status, statusClass, comment, learningPath;
+                
+                if (numericScore >= 24) {
+                    status = "Đạt";
+                    statusClass = "status-excellent";
+                    comment = "Chúc mừng bạn đã hoàn thành bài test! Điểm số của bạn ở mức cao của HSK1";
+                    learningPath = "HSK2 trở lên";
+                } else {
+                    status = "Chưa đạt";
+                    statusClass = "status-fail";
+                    comment = "Bạn chưa đạt mức cơ bản, cần bắt đầu từ Hán ngữ sơ cấp 1 để làm quen với phát âm và từ vựng nền";
+                    learningPath = "HSK1 trở lên";
+                }
+                
+                const statusBadge = document.getElementById('statusBadge');
+                if (statusBadge) {
+                    statusBadge.textContent = status;
+                    statusBadge.className = `status-badge ${statusClass}`;
+                }
+                
+                const commentText = document.getElementById('commentText');
+                if (commentText) {
+                    commentText.textContent = comment;
+                }
+                
+                const learningPathText = document.getElementById('learningPathText');
+                if (learningPathText) {
+                    learningPathText.textContent = learningPath;
+                }
+                
+                const testResultSection = document.getElementById('testResultSection');
+                if (testResultSection) {
+                    testResultSection.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Lỗi trong displayTestResultFromScore:', error);
             }
-            
-            const numericScore = parseInt(score);
-            if (isNaN(numericScore)) {
-                document.getElementById('testResultSection').style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('totalScore').textContent = numericScore;
-            
-            let status, statusClass, comment, learningPath;
-            
-            if (numericScore >= 24) {
-                status = "Đạt";
-                statusClass = "status-excellent";
-                comment = "Chúc mừng bạn đã hoàn thành bài test! Điểm số của bạn ở mức cao của HSK1";
-                learningPath = "HSK2 trở lên";
-            } else {
-                status = "Chưa đạt";
-                statusClass = "status-fail";
-                comment = "Bạn chưa đạt mức cơ bản, cần bắt đầu từ Hán ngữ sơ cấp 1 để làm quen với phát âm và từ vựng nền";
-                learningPath = "HSK1 trở lên";
-            }
-            
-            const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = status;
-            statusBadge.className = `status-badge ${statusClass}`;
-            
-            document.getElementById('commentText').textContent = comment;
-            document.getElementById('learningPathText').textContent = learningPath;
-            
-            document.getElementById('testResultSection').style.display = 'block';
         }
 
         function displayTestResult(allAnswers) {
@@ -3571,9 +3596,9 @@ Câu trả lời: ${rowData.answersText}
                 // Phần Nghe hiểu (Q1-Q35, index 0-34)
                 for (let i = 0; i < 35; i++) {
                     const key = String(i);
-                    const userAnswer = allAnswers[key] || 'N/A';
-                    const correctAnswer = correctAnswers[key];
-                    const isCorrect = userAnswer === correctAnswer;
+                    const userAnswer = String(allAnswers[key] || 'N/A').trim();
+                    const correctAnswer = String(correctAnswers[key] || '').trim();
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
                     
                     if (isCorrect) listeningCorrect++;
                     
@@ -3589,9 +3614,9 @@ Câu trả lời: ${rowData.answersText}
                 // Phần Đọc hiểu (Q36-Q60, index 35-59)
                 for (let i = 35; i < 60; i++) {
                     const key = String(i);
-                    const userAnswer = allAnswers[key] || 'N/A';
-                    const correctAnswer = correctAnswers[key];
-                    const isCorrect = userAnswer === correctAnswer;
+                    const userAnswer = String(allAnswers[key] || 'N/A').trim();
+                    const correctAnswer = String(correctAnswers[key] || '').trim();
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
                     
                     if (isCorrect) readingCorrect++;
                     
