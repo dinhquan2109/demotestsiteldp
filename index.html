@@ -3527,20 +3527,18 @@ Câu trả lời: ${rowData.answersText}
         });
 
         // Hàm hiển thị tổng quan bài làm HSK2
-        function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
-            // Hiển thị modal trước
-            const modal = document.getElementById('hsk2FeedbackModal');
-            modal.classList.add('show');
-            
+      function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
             // Kiểm tra nếu đang mở từ share link và xóa nút "Copy link"
             const urlParams = new URLSearchParams(window.location.search);
             const share = urlParams.get('share');
             const view = urlParams.get('view');
             
             if (share || view === 'feedback') {
-                // Xóa nút "Copy link" trong modal HSK2 cụ thể
+                // Xóa nút "Copy link" nếu đang mở từ share link
                 setTimeout(() => {
-                    const pdfBtn = modal.querySelector('.pdf-export-btn');
+                    // Tìm nút trong modal HSK2 cụ thể
+                    const hsk2Modal = document.getElementById('hsk2FeedbackModal');
+                    const pdfBtn = hsk2Modal ? hsk2Modal.querySelector('.pdf-export-btn') : null;
                     if (pdfBtn) {
                         pdfBtn.remove();
                     }
@@ -4335,6 +4333,22 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 const modal = document.getElementById('aiFeedbackModal');
                 modal.classList.add('show');
                 
+                // Kiểm tra nếu đang mở từ share link và xóa nút "Copy link"
+                const urlParams = new URLSearchParams(window.location.search);
+                const share = urlParams.get('share');
+                const view = urlParams.get('view');
+                
+                if (share || view === 'feedback') {
+                    // Xóa nút "Copy link" nếu đang mở từ share link
+                    setTimeout(() => {
+                        // Tìm nút trong modal HSK1 cụ thể
+                        const aiModal = document.getElementById('aiFeedbackModal');
+                        const pdfBtn = aiModal ? aiModal.querySelector('.pdf-export-btn') : null;
+                        if (pdfBtn) {
+                            pdfBtn.remove();
+                        }
+                    }, 100);
+                }
                 
                 // Điền thông tin học viên
                 document.getElementById('studentInfo').innerHTML = `
