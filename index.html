@@ -226,6 +226,19 @@
             border: 2px solid #f87171;
         }
 
+        .level-hsk1-badge {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .level-hsk2-badge {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -3323,11 +3336,21 @@ Câu trả lời: ${rowData.answersText}
         function showAIFeedbackById(dataId) {
             const data = window.studentFeedbackData[dataId];
             if (data) {
-                const level = data.selectedLevel || 'HSK1';
+                const level = (data.selectedLevel || 'HSK1').toString().trim().toUpperCase();
+                
+                // Debug log
+                console.log('🔍 Debug - Selected Level:', {
+                    originalLevel: data.selectedLevel,
+                    normalizedLevel: level,
+                    fullData: data
+                });
+                
                 // Kiểm tra trình độ và hiển thị modal tương ứng
-                if (level === 'HSK2') {
+                if (level === 'HSK2' || level === 'HSK 2') {
+                    console.log('✅ Hiển thị modal HSK2');
                     showHSK2Feedback(data.fullname, data.email, data.phone, data.essay, data.prompt, data.allAnswers, data.writingAiComment, data.score);
                 } else {
+                    console.log('✅ Hiển thị modal HSK1');
                     showAIFeedback(data.fullname, data.email, data.phone, data.essay, data.prompt, data.allAnswers, data.writingAiComment, data.score);
                 }
             } else {
@@ -3712,6 +3735,16 @@ Câu trả lời: ${rowData.answersText}
                 const writingAiComment = testResult ? testResult.writing_ai_comment : null;
                 const phone = item.phone;
                 
+                // Debug: Log level cho từng học viên
+                if (index === 0) {
+                    console.log('📋 Dữ liệu học viên đầu tiên:', {
+                        name: item.fullname,
+                        level: level,
+                        levelType: typeof level,
+                        testResult: testResult
+                    });
+                }
+                
                 // Lấy bài viết từ answers
                 let writingAnswer = null;
                 if (testResult && testResult.answers && testResult.answers['10']) {
@@ -3793,6 +3826,14 @@ Câu trả lời: ${rowData.answersText}
                     if (!window.studentFeedbackData) {
                         window.studentFeedbackData = {};
                     }
+                    
+                    // Debug log
+                    console.log('💾 Lưu data học viên:', {
+                        name: item.fullname,
+                        level: level,
+                        levelFromDB: testResult ? testResult.selected_level : 'N/A'
+                    });
+                    
                     window.studentFeedbackData[dataId] = {
                         fullname: item.fullname,
                         email: item.email,
@@ -3812,6 +3853,11 @@ Câu trả lời: ${rowData.answersText}
                     `;
                 }
 
+                // Highlight HSK2 trong cột trình độ
+                const levelDisplay = level && level !== 'N/A' ? level.toString().trim().toUpperCase() : level;
+                const isHSK2 = levelDisplay === 'HSK2' || levelDisplay === 'HSK 2';
+                const levelClass = isHSK2 ? 'level-hsk2-badge' : 'level-hsk1-badge';
+                
                 row.innerHTML = `
                     <td class="time-cell">${submitTime}</td>
                     <td>${item.fullname}</td>
@@ -3819,7 +3865,7 @@ Câu trả lời: ${rowData.answersText}
                     <td>${item.phone}</td>
                     <td>${item.email}</td>
                     <td><span class="score-badge ${scoreClass}">${score}</span></td>
-                    <td>${level}</td>
+                    <td><span class="${levelClass}" style="padding: 5px 10px; border-radius: 5px; font-weight: 600; display: inline-block;">${levelDisplay}</span></td>
                     <td>${recommendedLevel !== 'N/A' ? `<div class="recommended-level ${recommendedClass}">${recommendedLevel}</div>` : 'N/A'}</td>
                     <td>${answersHtml}</td>
                     <td class="action-cell">
