@@ -3559,6 +3559,7 @@ Câu trả lời: ${rowData.answersText}
             let finalScore = score;
             if (score === 'N/A' && allAnswers) {
                 let totalCorrect = 0;
+                console.log('Tính điểm HSK2 từ allAnswers:', allAnswers);
                 for (let i = 0; i < 60; i++) {
                     const key = String(i);
                     const userAnswer = allAnswers[key] || '';
@@ -3568,6 +3569,7 @@ Câu trả lời: ${rowData.answersText}
                     }
                 }
                 finalScore = totalCorrect * 2; // Mỗi câu đúng = 2 điểm
+                console.log('Điểm tính được:', finalScore, 'từ', totalCorrect, 'câu đúng');
             }
             
             // Hiển thị kết quả test
@@ -4330,7 +4332,8 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             const badge = document.createElement('div');
                             badge.className = `answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
                             badge.innerHTML = `
-                                ${answer.text} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                                ${index + 1}: ${userAnswer} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                                <span class="answer-tooltip">Đáp án đúng: ${correctAnswer}</span>
                             `;
                             listeningGrid.appendChild(badge);
                         }
@@ -4352,13 +4355,14 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                         const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
                         if (match) {
                             const userAnswer = match[2];
-                            const correctAnswer = correctAnswers[index + 35]; // Reading starts from Q36
+                            const correctAnswer = correctAnswers[index + 5]; // Reading starts from Q6 (index 5)
                             const isCorrect = userAnswer === correctAnswer;
                             
                             const badge = document.createElement('div');
                             badge.className = `answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
                             badge.innerHTML = `
-                                ${answer.text} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                                ${index + 6}: ${userAnswer} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                                <span class="answer-tooltip">Đáp án đúng: ${correctAnswer}</span>
                             `;
                             readingGrid.appendChild(badge);
                         }
