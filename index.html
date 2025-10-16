@@ -3635,6 +3635,16 @@ Câu trả lời: ${rowData.answersText}
                 document.getElementById('hsk2ReadingScore').textContent = readingCorrect;
             }
             
+            // Ẩn nút "Copy link" khi xem từ share link
+            const urlParams = new URLSearchParams(window.location.search);
+            const share = urlParams.get('share');
+            if (share) {
+                const pdfBtn = document.querySelector('.pdf-export-btn');
+                if (pdfBtn) {
+                    pdfBtn.style.display = 'none';
+                }
+            }
+            
             // Hiển thị modal
             const modal = document.getElementById('hsk2FeedbackModal');
             modal.classList.add('show');
@@ -4279,9 +4289,13 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 modal.classList.add('show');
                 
                 // Ẩn nút "Tạo link chia sẻ" khi xem link chia sẻ
-                const pdfBtn = document.querySelector('.pdf-export-btn');
-                if (pdfBtn) {
-                    pdfBtn.style.display = 'none';
+                const urlParams = new URLSearchParams(window.location.search);
+                const view = urlParams.get('view');
+                if (view === 'feedback') {
+                    const pdfBtn = document.querySelector('.pdf-export-btn');
+                    if (pdfBtn) {
+                        pdfBtn.style.display = 'none';
+                    }
                 }
                 
                 // Điền thông tin học viên
@@ -4494,7 +4508,8 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             });
                         }
                         
-                        // Không tính điểm ở đây, để showHSK2Feedback tự tính từ allAnswers
+                        // Sử dụng điểm từ database nếu có, nếu không thì tính từ allAnswers
+                        const score = shareData.score || 'N/A';
                         showHSK2Feedback(
                             shareData.student.name,
                             shareData.student.email,
@@ -4503,7 +4518,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             '',
                             allAnswers,
                             '',
-                            'N/A' // Để showHSK2Feedback tự tính điểm
+                            score
                         );
                     }
                 } catch (error) {
