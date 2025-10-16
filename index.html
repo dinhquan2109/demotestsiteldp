@@ -2182,13 +2182,15 @@
             document.getElementById('emailTotalScore').textContent = numericScore;
             
             // Cập nhật điểm tối đa dựa trên level
-            const maxScore = level === 'HSK2' ? 200 : 30;
+            const levelStr = (level || '1').toString().trim();
+            const isHSK2 = levelStr === '2' || levelStr.toUpperCase() === 'HSK2' || levelStr.toUpperCase() === 'HSK 2';
+            const maxScore = isHSK2 ? 200 : 30;
             document.getElementById('emailMaxScore').textContent = maxScore;
             
             let status, statusClass, comment, learningPath;
             
             // Kiểm tra level để áp dụng tiêu chí đánh giá khác nhau
-            if (level === 'HSK2') {
+            if (isHSK2) {
                 // Tiêu chí cho HSK2 (điểm tối đa 200)
                 if (numericScore >= 160) {
                     status = "Xuất sắc";
@@ -2247,7 +2249,10 @@
             let status, statusText, comment, learningPath;
             
             // Kiểm tra level để áp dụng tiêu chí đánh giá khác nhau
-            if (level === 'HSK2') {
+            const levelStr = (level || '1').toString().trim();
+            const isHSK2 = levelStr === '2' || levelStr.toUpperCase() === 'HSK2' || levelStr.toUpperCase() === 'HSK 2';
+            
+            if (isHSK2) {
                 // Tiêu chí cho HSK2 (điểm tối đa 200)
                 if (score !== 'N/A' && score >= 160) {
                     status = "Xuất sắc";
@@ -2301,7 +2306,7 @@
                 let listeningAnswers = '';
                 let readingAnswers = '';
                 
-                if (level === 'HSK2') {
+                if (isHSK2) {
                     // Đáp án đúng cho HSK2 (60 câu)
                     const correctAnswersHSK2 = {
                         // Phần Nghe - 35 câu (index 0-34)
@@ -2400,9 +2405,9 @@
                     }
                 }
                 
-                const listeningTotal = level === 'HSK2' ? 35 : 5;
-                const readingTotal = level === 'HSK2' ? 25 : 5;
-                const readingLabel = level === 'HSK2' ? 'Phần Đọc' : 'Phần Điền Đáp Án';
+                const listeningTotal = isHSK2 ? 35 : 5;
+                const readingTotal = isHSK2 ? 25 : 5;
+                const readingLabel = isHSK2 ? 'Phần Đọc' : 'Phần Điền Đáp Án';
                 
                 listeningSection = `
                     <div class="answers-section listening">
@@ -2771,9 +2776,9 @@
     </div>
     
     <div class="test-result-section">
-        <h3>Kết quả bài test ${level || ''}</h3>
+        <h3>Kết quả bài test ${isHSK2 ? 'HSK2' : 'HSK1'}</h3>
         <div class="score-info">
-            <h4>Điểm số: <span class="score-value">${score !== 'N/A' ? score : 'N/A'}</span>/${level === 'HSK2' ? '200' : '30'}</h4>
+            <h4>Điểm số: <span class="score-value">${score !== 'N/A' ? score : 'N/A'}</span>/${isHSK2 ? '200' : '30'}</h4>
         </div>
         
         <div class="result-details">
@@ -3336,21 +3341,12 @@ Câu trả lời: ${rowData.answersText}
         function showAIFeedbackById(dataId) {
             const data = window.studentFeedbackData[dataId];
             if (data) {
-                const level = (data.selectedLevel || 'HSK1').toString().trim().toUpperCase();
+                const level = (data.selectedLevel || '1').toString().trim();
+                const isHSK2 = level === '2' || level.toUpperCase() === 'HSK2' || level.toUpperCase() === 'HSK 2';
                 
-                // Debug log
-                console.log('🔍 Debug - Selected Level:', {
-                    originalLevel: data.selectedLevel,
-                    normalizedLevel: level,
-                    fullData: data
-                });
-                
-                // Kiểm tra trình độ và hiển thị modal tương ứng
-                if (level === 'HSK2' || level === 'HSK 2') {
-                    console.log('✅ Hiển thị modal HSK2');
+                if (isHSK2) {
                     showHSK2Feedback(data.fullname, data.email, data.phone, data.essay, data.prompt, data.allAnswers, data.writingAiComment, data.score);
                 } else {
-                    console.log('✅ Hiển thị modal HSK1');
                     showAIFeedback(data.fullname, data.email, data.phone, data.essay, data.prompt, data.allAnswers, data.writingAiComment, data.score);
                 }
             } else {
@@ -3735,16 +3731,6 @@ Câu trả lời: ${rowData.answersText}
                 const writingAiComment = testResult ? testResult.writing_ai_comment : null;
                 const phone = item.phone;
                 
-                // Debug: Log level cho từng học viên
-                if (index === 0) {
-                    console.log('📋 Dữ liệu học viên đầu tiên:', {
-                        name: item.fullname,
-                        level: level,
-                        levelType: typeof level,
-                        testResult: testResult
-                    });
-                }
-                
                 // Lấy bài viết từ answers
                 let writingAnswer = null;
                 if (testResult && testResult.answers && testResult.answers['10']) {
@@ -3827,13 +3813,6 @@ Câu trả lời: ${rowData.answersText}
                         window.studentFeedbackData = {};
                     }
                     
-                    // Debug log
-                    console.log('💾 Lưu data học viên:', {
-                        name: item.fullname,
-                        level: level,
-                        levelFromDB: testResult ? testResult.selected_level : 'N/A'
-                    });
-                    
                     window.studentFeedbackData[dataId] = {
                         fullname: item.fullname,
                         email: item.email,
@@ -3854,9 +3833,10 @@ Câu trả lời: ${rowData.answersText}
                 }
 
                 // Highlight HSK2 trong cột trình độ
-                const levelDisplay = level && level !== 'N/A' ? level.toString().trim().toUpperCase() : level;
-                const isHSK2 = levelDisplay === 'HSK2' || levelDisplay === 'HSK 2';
-                const levelClass = isHSK2 ? 'level-hsk2-badge' : 'level-hsk1-badge';
+                const levelStr = level && level !== 'N/A' ? level.toString().trim() : level;
+                const isHSK2Row = levelStr === '2' || levelStr.toUpperCase() === 'HSK2' || levelStr.toUpperCase() === 'HSK 2';
+                const levelDisplay = isHSK2Row ? 'HSK2' : (levelStr === '1' || levelStr.toUpperCase() === 'HSK1' || levelStr.toUpperCase() === 'HSK 1') ? 'HSK1' : levelStr;
+                const levelClass = isHSK2Row ? 'level-hsk2-badge' : 'level-hsk1-badge';
                 
                 row.innerHTML = `
                     <td class="time-cell">${submitTime}</td>
