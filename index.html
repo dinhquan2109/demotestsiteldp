@@ -4246,11 +4246,6 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
 
         function displaySharedFeedback(shareData) {
             try {
-                // Chỉ xử lý HSK1
-                if (shareData.type === 'hsk2') {
-                    return; // HSK2 được xử lý riêng
-                }
-                
                 // Hiển thị modal HSK1
                 const modal = document.getElementById('aiFeedbackModal');
                 modal.classList.add('show');
@@ -4272,20 +4267,6 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 // Hiển thị kết quả test nếu có điểm số
                 if (shareData.score !== undefined && shareData.score !== null) {
                     displayTestResultFromScore(shareData.score);
-                } else if (shareData.listening && shareData.reading) {
-                    // Fallback: tính điểm từ câu trả lời nếu không có điểm từ database
-                    const allAnswers = {};
-                    if (shareData.listening.answers) {
-                        shareData.listening.answers.forEach((answer, index) => {
-                            allAnswers[index] = answer.text.split(': ')[1] || answer.text;
-                        });
-                    }
-                    if (shareData.reading.answers) {
-                        shareData.reading.answers.forEach((answer, index) => {
-                            allAnswers[index + 5] = answer.text.split(': ')[1] || answer.text;
-                        });
-                    }
-                    displayTestResult(allAnswers);
                 }
                 
                 // Hiển thị phần Nghe
@@ -4395,8 +4376,40 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                     const decodedData = decodeURIComponent(atob(data));
                     const shareData = JSON.parse(decodedData);
                     
-                    // Chỉ xử lý HSK1 ở đây, HSK2 được xử lý riêng
-                    displaySharedFeedback(shareData);
+                    // Kiểm tra loại test để hiển thị modal phù hợp
+                    if (shareData.type === 'hsk2') {
+                        // Tạo allAnswers object từ dữ liệu share
+                        const allAnswers = {};
+                        if (shareData.listening && shareData.listening.answers) {
+                            shareData.listening.answers.forEach((answer, index) => {
+                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                                if (match) {
+                                    allAnswers[index] = match[2];
+                                }
+                            });
+                        }
+                        if (shareData.reading && shareData.reading.answers) {
+                            shareData.reading.answers.forEach((answer, index) => {
+                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                                if (match) {
+                                    allAnswers[index + 35] = match[2];
+                                }
+                            });
+                        }
+                        
+                        showHSK2Feedback(
+                            shareData.student.name,
+                            shareData.student.email,
+                            shareData.student.phone,
+                            '',
+                            '',
+                            allAnswers,
+                            '',
+                            'N/A'
+                        );
+                    } else {
+                        displaySharedFeedback(shareData);
+                    }
                 } catch (error) {
                     console.error('Lỗi khi decode dữ liệu:', error);
                     alert('❌ Link chia sẻ không hợp lệ.');
