@@ -2304,7 +2304,7 @@
                         '55': 'B', '56': 'C', '57': 'A', '58': 'B', '59': 'C'
                     };
                     
-                    // Phần Nghe (Q1-Q35, index 0-34)
+                    // Phần Nghe (Q1-Q35, index 0-34) - 6 câu/dòng
                     for (let i = 0; i < 35; i++) {
                         const key = String(i);
                         const userAnswer = allAnswers[key] || 'N/A';
@@ -2313,14 +2313,19 @@
                         
                         if (isCorrect) listeningCorrect++;
                         
+                        // Thêm <br> sau mỗi 6 câu
+                        if (i > 0 && i % 6 === 0) {
+                            listeningAnswers += '<br>';
+                        }
+                        
                         listeningAnswers += `
-                            <div class="answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}">
-                                ${i + 1}: ${userAnswer} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
-                            </div>
+                            <span class="answer-badge-inline ${isCorrect ? 'answer-correct' : 'answer-incorrect'}">
+                                ${i + 1}:${userAnswer}${isCorrect ? '✓' : '✗'}
+                            </span>
                         `;
                     }
                     
-                    // Phần Đọc (Q36-Q60, index 35-59)
+                    // Phần Đọc (Q36-Q60, index 35-59) - 6 câu/dòng
                     for (let i = 35; i < 60; i++) {
                         const key = String(i);
                         const userAnswer = allAnswers[key] || 'N/A';
@@ -2329,10 +2334,15 @@
                         
                         if (isCorrect) readingCorrect++;
                         
+                        // Thêm <br> sau mỗi 6 câu (từ câu 36)
+                        if (i > 35 && (i - 35) % 6 === 0) {
+                            readingAnswers += '<br>';
+                        }
+                        
                         readingAnswers += `
-                            <div class="answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}">
-                                ${i + 1}: ${userAnswer} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
-                            </div>
+                            <span class="answer-badge-inline ${isCorrect ? 'answer-correct' : 'answer-incorrect'}">
+                                ${i + 1}:${userAnswer}${isCorrect ? '✓' : '✗'}
+                            </span>
                         `;
                     }
                 } else {
@@ -2393,7 +2403,7 @@
                         <div class="section-title">
                             ${listeningLabel}: <span>${listeningCorrect}</span>/${listeningTotal} đúng
                         </div>
-                        <div class="answers-grid">
+                        <div class="${isHSK2 ? 'answers-inline' : 'answers-grid'}">
                             ${listeningAnswers}
                         </div>
                     </div>
@@ -2404,7 +2414,7 @@
                         <div class="section-title">
                             ${readingLabel}: <span>${readingCorrect}</span>/${readingTotal} đúng
                         </div>
-                        <div class="answers-grid">
+                        <div class="${isHSK2 ? 'answers-inline' : 'answers-grid'}">
                             ${readingAnswers}
                         </div>
                     </div>
@@ -2586,6 +2596,10 @@
             gap: 8px;
             justify-content: flex-start;
         }
+        .answers-inline {
+            line-height: 2.2;
+            font-size: 13px;
+        }
         .answer-badge {
             display: inline-flex;
             align-items: center;
@@ -2599,6 +2613,15 @@
             cursor: pointer;
             white-space: nowrap;
             min-width: 60px;
+        }
+        .answer-badge-inline {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            margin: 2px;
+            white-space: nowrap;
         }
         .answer-correct {
             background: #d1fae5;
@@ -3468,12 +3491,18 @@ Câu trả lời: ${rowData.answersText}
                     data.forEach(q => {
                         correctAnswers[String(q.question_number - 1)] = q.correct_answer;
                     });
+                    console.log('✅ Đã lấy', data.length, 'đáp án HSK2 từ database');
+                } else {
+                    console.error('❌ Lỗi lấy đáp án:', error);
                 }
             } catch (error) {
-                console.error('Lỗi lấy đáp án HSK2:', error);
+                console.error('❌ Exception lấy đáp án HSK2:', error);
             }
             
-            if (allAnswers && Object.keys(correctAnswers).length > 0) {
+            console.log('📝 allAnswers:', allAnswers);
+            console.log('📝 correctAnswers count:', Object.keys(correctAnswers).length);
+            
+            if (allAnswers) {
                 const listeningSection = document.getElementById('hsk2ListeningSection');
                 const listeningGrid = document.getElementById('hsk2ListeningGrid');
                 const readingSection = document.getElementById('hsk2ReadingSection');
@@ -3492,8 +3521,8 @@ Câu trả lời: ${rowData.answersText}
                 for (let i = 0; i < 35; i++) {
                     const key = String(i);
                     const userAnswer = allAnswers[key] || 'N/A';
-                    const correctAnswer = correctAnswers[key];
-                    const isCorrect = userAnswer === correctAnswer;
+                    const correctAnswer = correctAnswers[key] || '?';
+                    const isCorrect = correctAnswer !== '?' && userAnswer === correctAnswer;
                     
                     if (isCorrect) listeningCorrect++;
                     
@@ -3510,8 +3539,8 @@ Câu trả lời: ${rowData.answersText}
                 for (let i = 35; i < 60; i++) {
                     const key = String(i);
                     const userAnswer = allAnswers[key] || 'N/A';
-                    const correctAnswer = correctAnswers[key];
-                    const isCorrect = userAnswer === correctAnswer;
+                    const correctAnswer = correctAnswers[key] || '?';
+                    const isCorrect = correctAnswer !== '?' && userAnswer === correctAnswer;
                     
                     if (isCorrect) readingCorrect++;
                     
@@ -3566,8 +3595,8 @@ Câu trả lời: ${rowData.answersText}
             statusBadge.textContent = status;
             statusBadge.className = `status-badge ${statusClass}`;
             
-            document.getElementById('hsk2CommentText').textContent = comment;
-            document.getElementById('hsk2LearningPathText').textContent = learningPath;
+            document.getElementById('hsk2CommentText').innerHTML = comment;
+            document.getElementById('hsk2LearningPathText').innerHTML = learningPath;
             
             document.getElementById('hsk2TestResultSection').style.display = 'block';
         }
