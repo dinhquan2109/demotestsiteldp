@@ -3511,9 +3511,6 @@ Câu trả lời: ${rowData.answersText}
                 <p><strong>Số điện thoại:</strong> ${phone}</p>
             `;
             
-            // Hiển thị kết quả test nếu có điểm
-            displayTestResultFromScoreHSK2(score);
-            
             // Đáp án đúng HSK2 (60 câu)
             const correctAnswers = {
                 // Phần Nghe hiểu - 35 câu (Q1-Q35, index 0-34)
@@ -3532,6 +3529,24 @@ Câu trả lời: ${rowData.answersText}
                 '50': 'D', '51': 'C', '52': 'A', '53': 'F', '54': 'B',
                 '55': 'E', '56': 'A', '57': 'C', '58': 'D', '59': 'B'
             };
+            
+            // Tính điểm từ allAnswers nếu score = 'N/A'
+            let finalScore = score;
+            if (score === 'N/A' && allAnswers) {
+                let totalCorrect = 0;
+                for (let i = 0; i < 60; i++) {
+                    const key = String(i);
+                    const userAnswer = allAnswers[key] || '';
+                    const correctAnswer = correctAnswers[key];
+                    if (userAnswer === correctAnswer) {
+                        totalCorrect++;
+                    }
+                }
+                finalScore = totalCorrect * 2; // Mỗi câu đúng = 2 điểm
+            }
+            
+            // Hiển thị kết quả test
+            displayTestResultFromScoreHSK2(finalScore);
             
             if (allAnswers) {
                 const listeningSection = document.getElementById('hsk2ListeningSection');
@@ -4384,15 +4399,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             });
                         }
                         
-                        // Tính điểm tổng từ số câu đúng (mỗi câu = 2 điểm)
-                        let totalScore = 0;
-                        if (shareData.listening && shareData.listening.score) {
-                            totalScore += (parseInt(shareData.listening.score) || 0) * 2;
-                        }
-                        if (shareData.reading && shareData.reading.score) {
-                            totalScore += (parseInt(shareData.reading.score) || 0) * 2;
-                        }
-                        
+                        // Không tính điểm ở đây, để showHSK2Feedback tự tính từ allAnswers
                         showHSK2Feedback(
                             shareData.student.name,
                             shareData.student.email,
@@ -4401,7 +4408,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             '',
                             allAnswers,
                             '',
-                            totalScore
+                            'N/A' // Để showHSK2Feedback tự tính điểm
                         );
                     }
                 } catch (error) {
