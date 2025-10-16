@@ -4246,27 +4246,13 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
 
         function displaySharedFeedback(shareData) {
             try {
-                // Đáp án đúng HSK2 (60 câu)
-                const correctAnswers = {
-                    // Phần Nghe hiểu - 35 câu (Q1-Q35, index 0-34)
-                    '0': 'false', '1': 'true', '2': 'true', '3': 'false', '4': 'false',
-                    '5': 'false', '6': 'false', '7': 'true', '8': 'true', '9': 'true',
-                    '10': 'A', '11': 'B', '12': 'C', '13': 'F', '14': 'E',
-                    '15': 'D', '16': 'G', '17': 'H', '18': 'I', '19': 'J',
-                    '20': 'C', '21': 'A', '22': 'B', '23': 'C', '24': 'B',
-                    '25': 'A', '26': 'C', '27': 'C', '28': 'A', '29': 'B',
-                    '30': 'B', '31': 'A', '32': 'B', '33': 'A', '34': 'C',
-                    
-                    // Phần Đọc hiểu - 25 câu (Q36-Q60, index 35-59)
-                    '35': 'E', '36': 'B', '37': 'C', '38': 'F', '39': 'A',
-                    '40': 'B', '41': 'F', '42': 'D', '43': 'A', '44': 'C',
-                    '45': 'false', '46': 'true', '47': 'false', '48': 'false', '49': 'true',
-                    '50': 'D', '51': 'C', '52': 'A', '53': 'F', '54': 'B',
-                    '55': 'E', '56': 'A', '57': 'C', '58': 'D', '59': 'B'
-                };
+                // Chỉ xử lý HSK1
+                if (shareData.type === 'hsk2') {
+                    return; // HSK2 được xử lý riêng
+                }
                 
-                // Hiển thị modal HSK2
-                const modal = document.getElementById('hsk2FeedbackModal');
+                // Hiển thị modal HSK1
+                const modal = document.getElementById('aiFeedbackModal');
                 modal.classList.add('show');
                 
                 // Ẩn nút "Tạo link chia sẻ" khi xem link chia sẻ
@@ -4276,7 +4262,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 }
                 
                 // Điền thông tin học viên
-                document.getElementById('hsk2StudentInfo').innerHTML = `
+                document.getElementById('studentInfo').innerHTML = `
                     <h3>👤 Thông tin học viên</h3>
                     <p><strong>Họ tên:</strong> ${shareData.student.name}</p>
                     <p><strong>Email:</strong> ${shareData.student.email}</p>
@@ -4285,7 +4271,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 
                 // Hiển thị kết quả test nếu có điểm số
                 if (shareData.score !== undefined && shareData.score !== null) {
-                    displayTestResultFromScoreHSK2(shareData.score);
+                    displayTestResultFromScore(shareData.score);
                 } else if (shareData.listening && shareData.reading) {
                     // Fallback: tính điểm từ câu trả lời nếu không có điểm từ database
                     const allAnswers = {};
@@ -4304,9 +4290,9 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 
                 // Hiển thị phần Nghe
                 if (shareData.listening) {
-                    const listeningSection = document.getElementById('hsk2ListeningSection');
-                    const listeningGrid = document.getElementById('hsk2ListeningGrid');
-                    const listeningScore = document.getElementById('hsk2ListeningScore');
+                    const listeningSection = document.getElementById('listeningSection');
+                    const listeningGrid = document.getElementById('listeningGrid');
+                    const listeningScore = document.getElementById('listeningScore');
                     
                     listeningSection.style.display = 'block';
                     listeningScore.textContent = shareData.listening.score;
@@ -4332,9 +4318,9 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 
                 // Hiển thị phần Đọc hiểu
                 if (shareData.reading) {
-                    const readingSection = document.getElementById('hsk2ReadingSection');
-                    const readingGrid = document.getElementById('hsk2ReadingGrid');
-                    const readingScore = document.getElementById('hsk2ReadingScore');
+                    const readingSection = document.getElementById('readingSection');
+                    const readingGrid = document.getElementById('readingGrid');
+                    const readingScore = document.getElementById('readingScore');
                     
                     readingSection.style.display = 'block';
                     readingScore.textContent = shareData.reading.score;
@@ -4409,40 +4395,8 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                     const decodedData = decodeURIComponent(atob(data));
                     const shareData = JSON.parse(decodedData);
                     
-                    // Kiểm tra loại test để hiển thị modal phù hợp
-                    if (shareData.type === 'hsk2') {
-                        // Tạo allAnswers object từ dữ liệu share
-                        const allAnswers = {};
-                        if (shareData.listening && shareData.listening.answers) {
-                            shareData.listening.answers.forEach((answer, index) => {
-                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
-                                if (match) {
-                                    allAnswers[index] = match[2];
-                                }
-                            });
-                        }
-                        if (shareData.reading && shareData.reading.answers) {
-                            shareData.reading.answers.forEach((answer, index) => {
-                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
-                                if (match) {
-                                    allAnswers[index + 35] = match[2];
-                                }
-                            });
-                        }
-                        
-                        showHSK2Feedback(
-                            shareData.student.name,
-                            shareData.student.email,
-                            shareData.student.phone,
-                            '',
-                            '',
-                            allAnswers,
-                            '',
-                            'N/A'
-                        );
-                    } else {
-                        displaySharedFeedback(shareData);
-                    }
+                    // Chỉ xử lý HSK1 ở đây, HSK2 được xử lý riêng
+                    displaySharedFeedback(shareData);
                 } catch (error) {
                     console.error('Lỗi khi decode dữ liệu:', error);
                     alert('❌ Link chia sẻ không hợp lệ.');
