@@ -3528,6 +3528,21 @@ Câu trả lời: ${rowData.answersText}
 
         // Hàm hiển thị tổng quan bài làm HSK2
         function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
+            // Kiểm tra nếu đang mở từ share link và xóa nút "Copy link"
+            const urlParams = new URLSearchParams(window.location.search);
+            const share = urlParams.get('share');
+            const view = urlParams.get('view');
+            
+            if (share || view === 'feedback') {
+                // Xóa nút "Copy link" nếu đang mở từ share link
+                setTimeout(() => {
+                    const pdfBtn = document.querySelector('.pdf-export-btn');
+                    if (pdfBtn) {
+                        pdfBtn.remove();
+                    }
+                }, 100);
+            }
+            
             // Hiển thị thông tin học viên
             document.getElementById('hsk2StudentInfo').innerHTML = `
                 <h3>👤 Thông tin học viên</h3>
@@ -4486,14 +4501,6 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                         );
                     } else {
                         displaySharedFeedback(shareData);
-                        
-                        // Xóa nút "Copy link" sau khi modal đã render xong
-                        setTimeout(() => {
-                            const pdfBtn = document.querySelector('.pdf-export-btn');
-                            if (pdfBtn) {
-                                pdfBtn.remove();
-                            }
-                        }, 100);
                     }
                 } catch (error) {
                     console.error('Lỗi khi decode dữ liệu:', error);
@@ -4547,14 +4554,6 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                             '',
                             score
                         );
-                        
-                        // Xóa nút "Copy link" sau khi modal đã render xong
-                        setTimeout(() => {
-                            const pdfBtn = document.querySelector('.pdf-export-btn');
-                            if (pdfBtn) {
-                                pdfBtn.remove();
-                            }
-                        }, 100);
                     }
                 } catch (error) {
                     console.error('Lỗi khi parse share data:', error);
