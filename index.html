@@ -3717,12 +3717,28 @@ Câu trả lời: ${rowData.answersText}
                 let recommendedLevel = '';
                 let recommendedClass = '';
                 if (score !== 'N/A') {
-                    if (score >= 24 && score <= 30) {
-                        recommendedLevel = '✅ HSK2 trở lên<br><small style="font-size: 0.85em; font-weight: 400;">Đạt xuất sắc - Điểm cao HSK1</small>';
-                        recommendedClass = 'level-excellent';
+                    // Kiểm tra trình độ HSK
+                    const levelStr = (level || '1').toString().trim();
+                    const isHSK2 = levelStr === '2' || levelStr.toUpperCase() === 'HSK2' || levelStr.toUpperCase() === 'HSK 2';
+                    
+                    if (isHSK2) {
+                        // Logic cho HSK2 (điểm tối đa 200)
+                        if (score >= 150) {
+                            recommendedLevel = '✅ HSK3 trở lên<br><small style="font-size: 0.85em; font-weight: 400;">Hiểu và sử dụng được các mẫu câu giao tiếp cơ bản</small>';
+                            recommendedClass = 'level-excellent';
+                        } else {
+                            recommendedLevel = '📚 Học lại HSK1-2<br><small style="font-size: 0.85em; font-weight: 400;">Chưa vững từ vựng và cấu trúc ngữ pháp</small>';
+                            recommendedClass = 'level-fail';
+                        }
                     } else {
-                        recommendedLevel = '📚 HSK1 trở lên<br><small style="font-size: 0.85em; font-weight: 400;">Cần học từ cơ bản</small>';
-                        recommendedClass = 'level-fail';
+                        // Logic cho HSK1 (điểm tối đa 30)
+                        if (score >= 24 && score <= 30) {
+                            recommendedLevel = '✅ HSK2 trở lên<br><small style="font-size: 0.85em; font-weight: 400;">Đạt xuất sắc - Điểm cao HSK1</small>';
+                            recommendedClass = 'level-excellent';
+                        } else {
+                            recommendedLevel = '📚 HSK1 trở lên<br><small style="font-size: 0.85em; font-weight: 400;">Cần học từ cơ bản</small>';
+                            recommendedClass = 'level-fail';
+                        }
                     }
                 } else {
                     recommendedLevel = 'N/A';
