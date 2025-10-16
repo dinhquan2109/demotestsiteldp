@@ -2449,12 +2449,16 @@
             min-height: 100vh;
             width: 100%;
             box-sizing: border-box;
+            table-layout: fixed;
         }
         @media (max-width: 768px) {
             body {
                 max-width: 100%;
                 padding: 10px;
             }
+        }
+        * {
+            box-sizing: border-box;
         }
         .header {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -2809,7 +2813,7 @@
         <div class="result-details">
             <div class="result-item">
                 <h4>Trạng thái</h4>
-                <span class="status-badge ${score !== 'N/A' && score >= 24 ? 'status-excellent' : 'status-fail'}">${status}</span>
+                <span class="status-badge ${score !== 'N/A' && ((isHSK2 && score >= 150) || (!isHSK2 && score >= 24)) ? 'status-excellent' : 'status-fail'}">${status}</span>
             </div>
             
             <div class="result-item">
@@ -3630,7 +3634,7 @@ Câu trả lời: ${rowData.answersText}
             }
         });
 
-        function generateShareLinkHSK2() {
+        async function generateShareLinkHSK2() {
             try {
                 const studentInfo = document.getElementById('hsk2StudentInfo');
                 if (!studentInfo) {
@@ -3650,52 +3654,34 @@ Câu trả lời: ${rowData.answersText}
                 
                 // Lấy dữ liệu phần Nghe hiểu
                 if (listeningSection && listeningSection.style.display !== 'none') {
-                    const listeningScore = document.getElementById('hsk2ListeningScore')?.textContent || '0';
-                    const listeningGrid = document.getElementById('hsk2ListeningGrid');
-                    const answers = [];
-                    
-                    if (listeningGrid) {
-                        const answerElements = listeningGrid.querySelectorAll('.answer-badge');
-                        answerElements.forEach((element, index) => {
-                            const text = element.textContent.trim();
-                            const isCorrect = element.classList.contains('answer-correct');
-                            answers.push({
-                                question: index + 1,
-                                answer: text,
-                                correct: isCorrect
-                            });
-                        });
-                    }
-                    
-                    listeningData = {
-                        score: listeningScore,
-                        answers: answers
-                    };
+                    try {
+                        const listeningScore = document.getElementById('hsk2ListeningScore')?.textContent || '0';
+                        const listeningGrid = document.getElementById('hsk2ListeningGrid');
+                        if (listeningGrid) {
+                            const badges = listeningGrid.querySelectorAll('.answer-badge');
+                            const answers = Array.from(badges).map(badge => ({
+                                text: badge.textContent.trim(),
+                                isCorrect: badge.classList.contains('answer-correct')
+                            }));
+                            listeningData = { score: listeningScore, answers: answers };
+                        }
+                    } catch (e) {}
                 }
                 
                 // Lấy dữ liệu phần Đọc hiểu
                 if (readingSection && readingSection.style.display !== 'none') {
-                    const readingScore = document.getElementById('hsk2ReadingScore')?.textContent || '0';
-                    const readingGrid = document.getElementById('hsk2ReadingGrid');
-                    const answers = [];
-                    
-                    if (readingGrid) {
-                        const answerElements = readingGrid.querySelectorAll('.answer-badge');
-                        answerElements.forEach((element, index) => {
-                            const text = element.textContent.trim();
-                            const isCorrect = element.classList.contains('answer-correct');
-                            answers.push({
-                                question: index + 36, // HSK2 reading starts from Q36
-                                answer: text,
-                                correct: isCorrect
-                            });
-                        });
-                    }
-                    
-                    readingData = {
-                        score: readingScore,
-                        answers: answers
-                    };
+                    try {
+                        const readingScore = document.getElementById('hsk2ReadingScore')?.textContent || '0';
+                        const readingGrid = document.getElementById('hsk2ReadingGrid');
+                        if (readingGrid) {
+                            const badges = readingGrid.querySelectorAll('.answer-badge');
+                            const answers = Array.from(badges).map(badge => ({
+                                text: badge.textContent.trim(),
+                                isCorrect: badge.classList.contains('answer-correct')
+                            }));
+                            readingData = { score: readingScore, answers: answers };
+                        }
+                    } catch (e) {}
                 }
                 
                 // Tạo URL với dữ liệu
