@@ -1413,8 +1413,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">
-                    <span class="writing-icon">✍️</span>
-                    Tổng quan bài làm HSK2
+                    <span class="writing-icon">📊</span>
+                    Nhận xét tổng quan HSK2
                     <button class="pdf-export-btn" onclick="generateShareLinkHSK2()">
                         🔗 Copy link
                     </button>
@@ -1450,32 +1450,20 @@
                     </div>
                 </div>
                 
-                <!-- Phần Nghe (35 câu) -->
+                <!-- Phần Nghe hiểu (35 câu) -->
                 <div class="answers-section" id="hsk2ListeningSection" style="display:none;">
                     <div class="section-title">
-                        📻 Phần Nghe: <span id="hsk2ListeningScore">0</span>/35 đúng
+                        🎧 Nghe hiểu: <span id="hsk2ListeningScore">0</span>/35 đúng
                     </div>
                     <div class="answers-grid" id="hsk2ListeningGrid"></div>
                 </div>
                 
-                <!-- Phần Đọc (25 câu) -->
+                <!-- Phần Đọc hiểu (25 câu) -->
                 <div class="answers-section" id="hsk2ReadingSection" style="display:none;">
                     <div class="section-title">
-                        📖 Phần Đọc: <span id="hsk2ReadingScore">0</span>/25 đúng
+                        📖 Đọc hiểu: <span id="hsk2ReadingScore">0</span>/25 đúng
                     </div>
                     <div class="answers-grid" id="hsk2ReadingGrid"></div>
-                </div>
-
-                <div class="essay-display" id="hsk2EssayDisplay" style="display:none;">
-                    <h4>📝 Bài viết của học viên:</h4>
-                    <div class="essay-text" id="hsk2EssayText"></div>
-                </div>
-                <div class="writing-section">
-                    <div class="writing-title">
-                        <span class="writing-icon">💬</span>
-                        Nhận xét bài viết
-                    </div>
-                    <div id="hsk2AIFeedbackContent" class="writing-content"></div>
                 </div>
             </div>
         </div>
@@ -2191,22 +2179,17 @@
             
             // Kiểm tra level để áp dụng tiêu chí đánh giá khác nhau
             if (isHSK2) {
-                // Tiêu chí cho HSK2 (điểm tối đa 200)
-                if (numericScore >= 160) {
-                    status = "Xuất sắc";
+                // Logic đánh giá HSK2 (điểm tối đa 200)
+                if (numericScore >= 150) {
+                    status = "PASS";
                     statusClass = "email-status-excellent";
-                    comment = "Chúc mừng bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
-                    learningPath = "HSK3 trở lên";
-                } else if (numericScore >= 120) {
-                    status = "Đạt";
-                    statusClass = "email-status-pass";
-                    comment = "Bạn đã đạt yêu cầu bài test HSK2.";
-                    learningPath = "HSK2 - HSK3";
+                    comment = "Hiểu và sử dụng được các mẫu câu giao tiếp cơ bản, nắm vững khoảng 300 từ vựng HSK2, có thể nghe – nói – đọc ở mức đơn giản.";
+                    learningPath = "HSK3";
                 } else {
-                    status = "Chưa đạt";
+                    status = "NOT PASS";
                     statusClass = "email-status-fail";
-                    comment = "Bạn chưa đạt yêu cầu HSK2, cần ôn tập và củng cố kiến thức thêm.";
-                    learningPath = "HSK1 - HSK2";
+                    comment = "Chưa vững từ vựng và cấu trúc ngữ pháp; cần ôn luyện thêm kỹ năng nghe, đọc và phản xạ giao tiếp.";
+                    learningPath = "Học lại HSK1-2";
                 }
             } else {
                 // Tiêu chí cho HSK1 (điểm tối đa 30)
@@ -2253,22 +2236,17 @@
             const isHSK2 = levelStr === '2' || levelStr.toUpperCase() === 'HSK2' || levelStr.toUpperCase() === 'HSK 2';
             
             if (isHSK2) {
-                // Tiêu chí cho HSK2 (điểm tối đa 200)
-                if (score !== 'N/A' && score >= 160) {
-                    status = "Xuất sắc";
+                // Logic đánh giá HSK2 (điểm tối đa 200)
+                if (score !== 'N/A' && score >= 150) {
+                    status = "PASS";
                     statusText = "Chúc mừng!";
-                    comment = "Bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
-                    learningPath = "HSK3 trở lên";
-                } else if (score !== 'N/A' && score >= 120) {
-                    status = "Đạt";
-                    statusText = "Chúc mừng!";
-                    comment = "Bạn đã đạt yêu cầu bài test HSK2.";
-                    learningPath = "HSK2 - HSK3";
+                    comment = "Hiểu và sử dụng được các mẫu câu giao tiếp cơ bản, nắm vững khoảng 300 từ vựng HSK2, có thể nghe – nói – đọc ở mức đơn giản.";
+                    learningPath = "HSK3";
                 } else if (score !== 'N/A') {
-                    status = "Chưa đạt";
+                    status = "NOT PASS";
                     statusText = "Cần học thêm";
-                    comment = "Bạn chưa đạt yêu cầu HSK2, cần ôn tập và củng cố kiến thức thêm.";
-                    learningPath = "HSK1 - HSK2";
+                    comment = "Chưa vững từ vựng và cấu trúc ngữ pháp; cần ôn luyện thêm kỹ năng nghe, đọc và phản xạ giao tiếp.";
+                    learningPath = "Học lại HSK1-2";
                 } else {
                     status = "Chưa hoàn thành";
                     statusText = "Chưa có kết quả";
@@ -2407,12 +2385,13 @@
                 
                 const listeningTotal = isHSK2 ? 35 : 5;
                 const readingTotal = isHSK2 ? 25 : 5;
-                const readingLabel = isHSK2 ? 'Phần Đọc' : 'Phần Điền Đáp Án';
+                const listeningLabel = isHSK2 ? 'Nghe hiểu' : 'Phần Nghe';
+                const readingLabel = isHSK2 ? 'Đọc hiểu' : 'Phần Điền Đáp Án';
                 
                 listeningSection = `
                     <div class="answers-section listening">
                         <div class="section-title">
-                            Phần Nghe: <span>${listeningCorrect}</span>/${listeningTotal} đúng
+                            ${listeningLabel}: <span>${listeningCorrect}</span>/${listeningTotal} đúng
                         </div>
                         <div class="answers-grid">
                             ${listeningAnswers}
@@ -2432,8 +2411,8 @@
                 `;
             }
             
-            // Phần bài viết
-            if (essay && essay.trim().length > 0) {
+            // Phần bài viết (chỉ cho HSK1, HSK2 không có)
+            if (!isHSK2 && essay && essay.trim().length > 0) {
                 essaySection = `
                     <div class="essay-display">
                         <h4>Bài viết của học viên:</h4>
@@ -2805,6 +2784,7 @@
     
     ${essaySection}
     
+    ${!isHSK2 ? `
     <div class="writing-section">
         <div class="writing-title">
             Nhận xét bài viết
@@ -2812,7 +2792,7 @@
         <div class="writing-content">
             ${writingAiComment ? writingAiComment.replace(/\n/g, '<br>') : '<p>Chưa có nhận xét bài viết.</p>'}
         </div>
-    </div>
+    </div>` : ''}
     
 </body>
 </html>`;
@@ -3464,7 +3444,7 @@ Câu trả lời: ${rowData.answersText}
         });
 
         // Hàm hiển thị tổng quan bài làm HSK2
-        function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
+        async function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
             // Hiển thị thông tin học viên
             document.getElementById('hsk2StudentInfo').innerHTML = `
                 <h3>👤 Thông tin học viên</h3>
@@ -3476,26 +3456,24 @@ Câu trả lời: ${rowData.answersText}
             // Hiển thị kết quả test nếu có điểm
             displayTestResultFromScoreHSK2(score);
             
-            // Đáp án đúng cho HSK2 (60 câu)
-            const correctAnswers = {
-                // Phần Nghe - 35 câu (index 0-34)
-                '0': 'A', '1': 'B', '2': 'C', '3': 'A', '4': 'B',
-                '5': 'C', '6': 'A', '7': 'B', '8': 'C', '9': 'A',
-                '10': 'B', '11': 'C', '12': 'A', '13': 'B', '14': 'C',
-                '15': 'A', '16': 'B', '17': 'C', '18': 'A', '19': 'B',
-                '20': 'C', '21': 'A', '22': 'B', '23': 'C', '24': 'A',
-                '25': 'B', '26': 'C', '27': 'A', '28': 'B', '29': 'C',
-                '30': 'A', '31': 'B', '32': 'C', '33': 'A', '34': 'B',
+            // Lấy đáp án đúng từ database
+            let correctAnswers = {};
+            try {
+                const { data, error } = await supabaseClient
+                    .from('hsk2_questions')
+                    .select('question_number, correct_answer')
+                    .order('question_number', { ascending: true });
                 
-                // Phần Đọc - 25 câu (index 35-59)
-                '35': 'C', '36': 'A', '37': 'B', '38': 'C', '39': 'A',
-                '40': 'B', '41': 'C', '42': 'A', '43': 'B', '44': 'C',
-                '45': 'A', '46': 'B', '47': 'C', '48': 'A', '49': 'B',
-                '50': 'C', '51': 'A', '52': 'B', '53': 'C', '54': 'A',
-                '55': 'B', '56': 'C', '57': 'A', '58': 'B', '59': 'C'
-            };
+                if (!error && data) {
+                    data.forEach(q => {
+                        correctAnswers[String(q.question_number - 1)] = q.correct_answer;
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi lấy đáp án HSK2:', error);
+            }
             
-            if (allAnswers) {
+            if (allAnswers && Object.keys(correctAnswers).length > 0) {
                 const listeningSection = document.getElementById('hsk2ListeningSection');
                 const listeningGrid = document.getElementById('hsk2ListeningGrid');
                 const readingSection = document.getElementById('hsk2ReadingSection');
@@ -3510,7 +3488,7 @@ Câu trả lời: ${rowData.answersText}
                 let listeningCorrect = 0;
                 let readingCorrect = 0;
                 
-                // Phần Nghe (Q1-Q35, index 0-34)
+                // Phần Nghe hiểu (Q1-Q35, index 0-34)
                 for (let i = 0; i < 35; i++) {
                     const key = String(i);
                     const userAnswer = allAnswers[key] || 'N/A';
@@ -3528,7 +3506,7 @@ Câu trả lời: ${rowData.answersText}
                     listeningGrid.appendChild(badge);
                 }
                 
-                // Phần Đọc (Q36-Q60, index 35-59)
+                // Phần Đọc hiểu (Q36-Q60, index 35-59)
                 for (let i = 35; i < 60; i++) {
                     const key = String(i);
                     const userAnswer = allAnswers[key] || 'N/A';
@@ -3548,40 +3526,6 @@ Câu trả lời: ${rowData.answersText}
                 
                 document.getElementById('hsk2ListeningScore').textContent = listeningCorrect;
                 document.getElementById('hsk2ReadingScore').textContent = readingCorrect;
-            }
-            
-            // Hiển thị bài viết nếu có
-            if (essay && essay.trim().length > 0) {
-                document.getElementById('hsk2EssayDisplay').style.display = 'block';
-                document.getElementById('hsk2EssayText').textContent = essay;
-            } else {
-                document.getElementById('hsk2EssayDisplay').style.display = 'none';
-            }
-            
-            // Hiển thị nhận xét AI
-            const feedbackContent = document.getElementById('hsk2AIFeedbackContent');
-            
-            if (writingAiComment && writingAiComment.trim().length > 0) {
-                const paragraphs = writingAiComment.split('\n\n').filter(p => p.trim());
-                let formattedHTML = '';
-                
-                if (paragraphs.length > 0) {
-                    paragraphs.forEach(para => {
-                        const cleaned = para.trim().replace(/\n/g, '<br>');
-                        formattedHTML += `<p>${cleaned}</p>`;
-                    });
-                } else {
-                    formattedHTML = `<p>${writingAiComment.replace(/\n/g, '<br>')}</p>`;
-                }
-                
-                feedbackContent.innerHTML = formattedHTML;
-            } else {
-                feedbackContent.innerHTML = `
-                    <p style="color: #92400e;">
-                        <strong>📝 Chưa có nhận xét</strong><br><br>
-                        Bài viết của học viên chưa được đánh giá bởi AI.
-                    </p>
-                `;
             }
             
             // Hiển thị modal
@@ -3605,22 +3549,17 @@ Câu trả lời: ${rowData.answersText}
             
             let status, statusClass, comment, learningPath;
             
-            // Điều chỉnh tiêu chí cho HSK2 (điểm tối đa 200)
-            if (numericScore >= 160) {
-                status = "Xuất sắc";
+            // Logic đánh giá HSK2 (điểm tối đa 200)
+            if (numericScore >= 150) {
+                status = "PASS";
                 statusClass = "status-excellent";
-                comment = "Chúc mừng bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
-                learningPath = "HSK3 trở lên";
-            } else if (numericScore >= 120) {
-                status = "Đạt";
-                statusClass = "status-pass";
-                comment = "Bạn đã đạt yêu cầu bài test HSK2.";
-                learningPath = "HSK2 - HSK3";
+                comment = "Hiểu và sử dụng được các mẫu câu giao tiếp cơ bản, nắm vững khoảng 300 từ vựng HSK2, có thể nghe – nói – đọc ở mức đơn giản.";
+                learningPath = "HSK3";
             } else {
-                status = "Chưa đạt";
+                status = "NOT PASS";
                 statusClass = "status-fail";
-                comment = "Bạn chưa đạt yêu cầu HSK2, cần ôn tập và củng cố kiến thức thêm.";
-                learningPath = "HSK1 - HSK2";
+                comment = "Chưa vững từ vựng và cấu trúc ngữ pháp; cần ôn luyện thêm kỹ năng nghe, đọc và phản xạ giao tiếp.";
+                learningPath = "Học lại HSK1-2";
             }
             
             const statusBadge = document.getElementById('hsk2StatusBadge');
