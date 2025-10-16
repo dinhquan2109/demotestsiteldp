@@ -3638,7 +3638,10 @@ Câu trả lời: ${rowData.answersText}
             // Ẩn nút "Copy link" khi xem từ share link
             const urlParams = new URLSearchParams(window.location.search);
             const share = urlParams.get('share');
-            if (share) {
+            const view = urlParams.get('view');
+            
+            // Kiểm tra nếu đang mở từ share link (có share parameter hoặc view=feedback)
+            if (share || view === 'feedback') {
                 const pdfBtn = document.querySelector('.pdf-export-btn');
                 if (pdfBtn) {
                     pdfBtn.remove(); // Xóa hoàn toàn thay vì ẩn
@@ -4328,7 +4331,10 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 // Xóa nút "Tạo link chia sẻ" khi xem link chia sẻ
                 const urlParams = new URLSearchParams(window.location.search);
                 const view = urlParams.get('view');
-                if (view === 'feedback') {
+                const share = urlParams.get('share');
+                
+                // Kiểm tra nếu đang mở từ share link (có share parameter hoặc view=feedback)
+                if (share || view === 'feedback') {
                     const pdfBtn = document.querySelector('.pdf-export-btn');
                     if (pdfBtn) {
                         pdfBtn.remove(); // Xóa hoàn toàn thay vì ẩn
