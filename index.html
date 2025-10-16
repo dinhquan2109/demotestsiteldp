@@ -1415,7 +1415,7 @@
                     <h3>📊 Kết quả bài test HSK2</h3>
                     <div class="score-display">
                         <div class="score-info">
-                            <h4>Điểm số: <span class="score-value" id="hsk2TotalScore">0</span>/100</h4>
+                            <h4>Điểm số: <span class="score-value" id="hsk2TotalScore">0</span>/200</h4>
                         </div>
                         
                         <div class="result-details">
@@ -2169,20 +2169,20 @@
             document.getElementById('emailTotalScore').textContent = numericScore;
             
             // Cập nhật điểm tối đa dựa trên level
-            const maxScore = level === 'HSK2' ? 100 : 30;
+            const maxScore = level === 'HSK2' ? 200 : 30;
             document.getElementById('emailMaxScore').textContent = maxScore;
             
             let status, statusClass, comment, learningPath;
             
             // Kiểm tra level để áp dụng tiêu chí đánh giá khác nhau
             if (level === 'HSK2') {
-                // Tiêu chí cho HSK2 (điểm tối đa 100)
-                if (numericScore >= 80) {
+                // Tiêu chí cho HSK2 (điểm tối đa 200)
+                if (numericScore >= 160) {
                     status = "Xuất sắc";
                     statusClass = "email-status-excellent";
                     comment = "Chúc mừng bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
                     learningPath = "HSK3 trở lên";
-                } else if (numericScore >= 60) {
+                } else if (numericScore >= 120) {
                     status = "Đạt";
                     statusClass = "email-status-pass";
                     comment = "Bạn đã đạt yêu cầu bài test HSK2.";
@@ -2235,13 +2235,13 @@
             
             // Kiểm tra level để áp dụng tiêu chí đánh giá khác nhau
             if (level === 'HSK2') {
-                // Tiêu chí cho HSK2 (điểm tối đa 100)
-                if (score !== 'N/A' && score >= 80) {
+                // Tiêu chí cho HSK2 (điểm tối đa 200)
+                if (score !== 'N/A' && score >= 160) {
                     status = "Xuất sắc";
                     statusText = "Chúc mừng!";
                     comment = "Bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
                     learningPath = "HSK3 trở lên";
-                } else if (score !== 'N/A' && score >= 60) {
+                } else if (score !== 'N/A' && score >= 120) {
                     status = "Đạt";
                     statusText = "Chúc mừng!";
                     comment = "Bạn đã đạt yêu cầu bài test HSK2.";
@@ -2760,7 +2760,7 @@
     <div class="test-result-section">
         <h3>Kết quả bài test ${level || ''}</h3>
         <div class="score-info">
-            <h4>Điểm số: <span class="score-value">${score !== 'N/A' ? score : 'N/A'}</span>/${level === 'HSK2' ? '100' : '30'}</h4>
+            <h4>Điểm số: <span class="score-value">${score !== 'N/A' ? score : 'N/A'}</span>/${level === 'HSK2' ? '200' : '30'}</h4>
         </div>
         
         <div class="result-details">
@@ -3586,13 +3586,13 @@ Câu trả lời: ${rowData.answersText}
             
             let status, statusClass, comment, learningPath;
             
-            // Điều chỉnh tiêu chí cho HSK2 (điểm tối đa 100)
-            if (numericScore >= 80) {
+            // Điều chỉnh tiêu chí cho HSK2 (điểm tối đa 200)
+            if (numericScore >= 160) {
                 status = "Xuất sắc";
                 statusClass = "status-excellent";
                 comment = "Chúc mừng bạn đã hoàn thành bài test HSK2 với kết quả xuất sắc!";
                 learningPath = "HSK3 trở lên";
-            } else if (numericScore >= 60) {
+            } else if (numericScore >= 120) {
                 status = "Đạt";
                 statusClass = "status-pass";
                 comment = "Bạn đã đạt yêu cầu bài test HSK2.";
