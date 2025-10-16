@@ -3639,12 +3639,13 @@ Câu trả lời: ${rowData.answersText}
         }
 
         function displayTestResultFromScoreHSK2(score) {
-            if (!score || score === null || score === undefined) {
+            // Cho phép score = 0
+            if (score === null || score === undefined) {
                 document.getElementById('hsk2TestResultSection').style.display = 'none';
                 return;
             }
             
-            // Hiển thị section ngay cả khi score = 'N/A'
+            // Hiển thị section ngay cả khi score = 'N/A' hoặc score = 0
             document.getElementById('hsk2TestResultSection').style.display = 'block';
             
             let numericScore;
@@ -4293,6 +4294,20 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 if (shareData.score !== undefined && shareData.score !== null) {
                     displayTestResultFromScore(shareData.score);
                 }
+                
+                // Đáp án đúng HSK1 (10 câu)
+                const correctAnswers = {
+                    '0': 'B',   // Q1
+                    '1': 'A',   // Q2
+                    '2': 'A',   // Q3
+                    '3': 'A',   // Q4
+                    '4': 'B',   // Q5
+                    '5': '她叫苏苏',   // Q6
+                    '6': 'A',   // Q7
+                    '7': 'B',   // Q8
+                    '8': 'A',   // Q9
+                    '9': 'B'    // Q10
+                };
                 
                 // Hiển thị phần Nghe
                 if (shareData.listening) {
