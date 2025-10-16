@@ -3641,7 +3641,7 @@ Câu trả lời: ${rowData.answersText}
             if (share) {
                 const pdfBtn = document.querySelector('.pdf-export-btn');
                 if (pdfBtn) {
-                    pdfBtn.style.display = 'none';
+                    pdfBtn.remove(); // Xóa hoàn toàn thay vì ẩn
                 }
             }
             
@@ -3764,6 +3764,26 @@ Câu trả lời: ${rowData.answersText}
                     } catch (e) {}
                 }
                 
+                // Lấy điểm từ database
+                const totalScoreElement = document.getElementById('hsk2TotalScore');
+                const currentScore = totalScoreElement ? totalScoreElement.textContent : null;
+                
+                // Nếu không có điểm từ element, thử lấy từ dataset của row
+                let finalScore = currentScore;
+                if (!finalScore || finalScore === '0' || finalScore === 'N/A') {
+                    // Tìm row hiện tại trong table để lấy điểm từ database
+                    const rows = document.querySelectorAll('#dataTable tbody tr');
+                    for (let row of rows) {
+                        if (row.dataset.selectedLevel === 'HSK2' || row.dataset.selectedLevel === '2') {
+                            const scoreCell = row.querySelector('td:nth-child(3)');
+                            if (scoreCell && scoreCell.textContent.trim() !== 'N/A') {
+                                finalScore = scoreCell.textContent.trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 // Tạo URL với dữ liệu
                 const shareData = {
                     type: 'hsk2',
@@ -3772,6 +3792,7 @@ Câu trả lời: ${rowData.answersText}
                         email: studentEmail,
                         phone: studentPhone
                     },
+                    score: finalScore,
                     listening: listeningData,
                     reading: readingData,
                     timestamp: new Date().toISOString()
@@ -4130,13 +4151,29 @@ Câu trả lời: ${rowData.answersText}
                 const totalScoreElement = document.getElementById('totalScore');
                 const currentScore = totalScoreElement ? totalScoreElement.textContent : null;
                 
+                // Nếu không có điểm từ element, thử lấy từ dataset của row
+                let finalScore = currentScore;
+                if (!finalScore || finalScore === '0' || finalScore === 'N/A') {
+                    // Tìm row hiện tại trong table để lấy điểm từ database
+                    const rows = document.querySelectorAll('#dataTable tbody tr');
+                    for (let row of rows) {
+                        if (row.dataset.selectedLevel === 'HSK1' || row.dataset.selectedLevel === '1') {
+                            const scoreCell = row.querySelector('td:nth-child(3)');
+                            if (scoreCell && scoreCell.textContent.trim() !== 'N/A') {
+                                finalScore = scoreCell.textContent.trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 const shareData = {
                     student: {
                         name: studentName,
                         email: studentEmail,
                         phone: studentPhone
                     },
-                    score: currentScore,
+                    score: finalScore,
                     listening: listeningData,
                     reading: readingData,
                     essay: essayData,
@@ -4288,13 +4325,13 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                 const modal = document.getElementById('aiFeedbackModal');
                 modal.classList.add('show');
                 
-                // Ẩn nút "Tạo link chia sẻ" khi xem link chia sẻ
+                // Xóa nút "Tạo link chia sẻ" khi xem link chia sẻ
                 const urlParams = new URLSearchParams(window.location.search);
                 const view = urlParams.get('view');
                 if (view === 'feedback') {
                     const pdfBtn = document.querySelector('.pdf-export-btn');
                     if (pdfBtn) {
-                        pdfBtn.style.display = 'none';
+                        pdfBtn.remove(); // Xóa hoàn toàn thay vì ẩn
                     }
                 }
                 
