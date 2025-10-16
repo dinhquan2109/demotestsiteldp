@@ -2442,11 +2442,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        @media (max-width: 768px) {
+            body {
+                max-width: 100%;
+                padding: 10px;
+            }
         }
         .header {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -2522,6 +2530,13 @@
             border: 2px solid #e9ecef;
             display: flex;
             gap: 15px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+            .result-details {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
         .result-item {
             text-align: center;
@@ -2599,6 +2614,14 @@
         .answers-inline {
             line-height: 2.2;
             font-size: 13px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        @media (max-width: 768px) {
+            .answers-inline {
+                font-size: 12px;
+                line-height: 2.0;
+            }
         }
         .answer-badge {
             display: inline-flex;
@@ -3608,7 +3631,122 @@ Câu trả lời: ${rowData.answersText}
         });
 
         function generateShareLinkHSK2() {
-            alert('🔗 Chức năng copy link cho HSK2 đang được phát triển!');
+            try {
+                const studentInfo = document.getElementById('hsk2StudentInfo');
+                if (!studentInfo) {
+                    alert('❌ Không tìm thấy thông tin học viên!');
+                    return;
+                }
+                
+                const studentName = studentInfo.querySelector('p:nth-child(2)')?.textContent?.replace('Họ tên: ', '') || 'HocVien';
+                const studentEmail = studentInfo.querySelector('p:nth-child(3)')?.textContent?.replace('Email: ', '') || '';
+                const studentPhone = studentInfo.querySelector('p:nth-child(4)')?.textContent?.replace('Số điện thoại: ', '') || '';
+                
+                const listeningSection = document.getElementById('hsk2ListeningSection');
+                const readingSection = document.getElementById('hsk2ReadingSection');
+                
+                let listeningData = null;
+                let readingData = null;
+                
+                // Lấy dữ liệu phần Nghe hiểu
+                if (listeningSection && listeningSection.style.display !== 'none') {
+                    const listeningScore = document.getElementById('hsk2ListeningScore')?.textContent || '0';
+                    const listeningGrid = document.getElementById('hsk2ListeningGrid');
+                    const answers = [];
+                    
+                    if (listeningGrid) {
+                        const answerElements = listeningGrid.querySelectorAll('.answer-badge');
+                        answerElements.forEach((element, index) => {
+                            const text = element.textContent.trim();
+                            const isCorrect = element.classList.contains('answer-correct');
+                            answers.push({
+                                question: index + 1,
+                                answer: text,
+                                correct: isCorrect
+                            });
+                        });
+                    }
+                    
+                    listeningData = {
+                        score: listeningScore,
+                        answers: answers
+                    };
+                }
+                
+                // Lấy dữ liệu phần Đọc hiểu
+                if (readingSection && readingSection.style.display !== 'none') {
+                    const readingScore = document.getElementById('hsk2ReadingScore')?.textContent || '0';
+                    const readingGrid = document.getElementById('hsk2ReadingGrid');
+                    const answers = [];
+                    
+                    if (readingGrid) {
+                        const answerElements = readingGrid.querySelectorAll('.answer-badge');
+                        answerElements.forEach((element, index) => {
+                            const text = element.textContent.trim();
+                            const isCorrect = element.classList.contains('answer-correct');
+                            answers.push({
+                                question: index + 36, // HSK2 reading starts from Q36
+                                answer: text,
+                                correct: isCorrect
+                            });
+                        });
+                    }
+                    
+                    readingData = {
+                        score: readingScore,
+                        answers: answers
+                    };
+                }
+                
+                // Tạo URL với dữ liệu
+                const shareData = {
+                    type: 'hsk2',
+                    student: {
+                        name: studentName,
+                        email: studentEmail,
+                        phone: studentPhone
+                    },
+                    listening: listeningData,
+                    reading: readingData,
+                    timestamp: new Date().toISOString()
+                };
+                
+                const encodedData = encodeURIComponent(JSON.stringify(shareData));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
+                
+                // Copy vào clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                    }).catch(() => {
+                        // Fallback
+                        const textArea = document.createElement('textarea');
+                        textArea.value = shareUrl;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                    });
+                } else {
+                    // Fallback cho trình duyệt cũ
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareUrl;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert(`✅ Đã copy link chia sẻ HSK2!\n\n🔗 Link: ${shareUrl}\n\n📋 Link đã được lưu vào clipboard.`);
+                }
+                
+            } catch (error) {
+                console.error('Error generating share link:', error);
+                alert('❌ Có lỗi xảy ra khi tạo link chia sẻ!\n\nVui lòng thử lại.');
+            }
         }
 
         async function loadAllData() {
