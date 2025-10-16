@@ -3548,6 +3548,11 @@ Câu trả lời: ${rowData.answersText}
             // Hiển thị kết quả test
             displayTestResultFromScoreHSK2(finalScore);
             
+            // Nếu đã tính được điểm, cập nhật lại
+            if (finalScore !== 'N/A') {
+                document.getElementById('hsk2TotalScore').textContent = finalScore;
+            }
+            
             if (allAnswers) {
                 const listeningSection = document.getElementById('hsk2ListeningSection');
                 const listeningGrid = document.getElementById('hsk2ListeningGrid');
@@ -3609,15 +3614,25 @@ Câu trả lời: ${rowData.answersText}
         }
 
         function displayTestResultFromScoreHSK2(score) {
-            if (!score || score === 'N/A' || score === null || score === undefined) {
+            if (!score || score === null || score === undefined) {
                 document.getElementById('hsk2TestResultSection').style.display = 'none';
                 return;
             }
             
-            const numericScore = parseInt(score);
-            if (isNaN(numericScore)) {
-                document.getElementById('hsk2TestResultSection').style.display = 'none';
+            // Hiển thị section ngay cả khi score = 'N/A'
+            document.getElementById('hsk2TestResultSection').style.display = 'block';
+            
+            let numericScore;
+            if (score === 'N/A') {
+                // Nếu score = 'N/A', hiển thị "Đang tính điểm..."
+                document.getElementById('hsk2TotalScore').textContent = 'Đang tính...';
                 return;
+            } else {
+                numericScore = parseInt(score);
+                if (isNaN(numericScore)) {
+                    document.getElementById('hsk2TestResultSection').style.display = 'none';
+                    return;
+                }
             }
             
             document.getElementById('hsk2TotalScore').textContent = numericScore;
@@ -4231,6 +4246,25 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
 
         function displaySharedFeedback(shareData) {
             try {
+                // Đáp án đúng HSK2 (60 câu)
+                const correctAnswers = {
+                    // Phần Nghe hiểu - 35 câu (Q1-Q35, index 0-34)
+                    '0': 'false', '1': 'true', '2': 'true', '3': 'false', '4': 'false',
+                    '5': 'false', '6': 'false', '7': 'true', '8': 'true', '9': 'true',
+                    '10': 'A', '11': 'B', '12': 'C', '13': 'F', '14': 'E',
+                    '15': 'D', '16': 'G', '17': 'H', '18': 'I', '19': 'J',
+                    '20': 'C', '21': 'A', '22': 'B', '23': 'C', '24': 'B',
+                    '25': 'A', '26': 'C', '27': 'C', '28': 'A', '29': 'B',
+                    '30': 'B', '31': 'A', '32': 'B', '33': 'A', '34': 'C',
+                    
+                    // Phần Đọc hiểu - 25 câu (Q36-Q60, index 35-59)
+                    '35': 'E', '36': 'B', '37': 'C', '38': 'F', '39': 'A',
+                    '40': 'B', '41': 'F', '42': 'D', '43': 'A', '44': 'C',
+                    '45': 'false', '46': 'true', '47': 'false', '48': 'false', '49': 'true',
+                    '50': 'D', '51': 'C', '52': 'A', '53': 'F', '54': 'B',
+                    '55': 'E', '56': 'A', '57': 'C', '58': 'D', '59': 'B'
+                };
+                
                 // Hiển thị modal
                 const modal = document.getElementById('aiFeedbackModal');
                 modal.classList.add('show');
@@ -4278,13 +4312,21 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                     listeningScore.textContent = shareData.listening.score;
                     listeningGrid.innerHTML = '';
                     
-                    shareData.listening.answers.forEach(answer => {
-                        const badge = document.createElement('div');
-                        badge.className = `answer-badge ${answer.isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
-                        badge.innerHTML = `
-                            ${answer.text} <span class="answer-icon">${answer.isCorrect ? '✓' : '✗'}</span>
-                        `;
-                        listeningGrid.appendChild(badge);
+                    shareData.listening.answers.forEach((answer, index) => {
+                        // Tính lại isCorrect từ câu trả lời thực tế
+                        const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                        if (match) {
+                            const userAnswer = match[2];
+                            const correctAnswer = correctAnswers[index];
+                            const isCorrect = userAnswer === correctAnswer;
+                            
+                            const badge = document.createElement('div');
+                            badge.className = `answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
+                            badge.innerHTML = `
+                                ${answer.text} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                            `;
+                            listeningGrid.appendChild(badge);
+                        }
                     });
                 }
                 
@@ -4298,13 +4340,21 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                     readingScore.textContent = shareData.reading.score;
                     readingGrid.innerHTML = '';
                     
-                    shareData.reading.answers.forEach(answer => {
-                        const badge = document.createElement('div');
-                        badge.className = `answer-badge ${answer.isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
-                        badge.innerHTML = `
-                            ${answer.text} <span class="answer-icon">${answer.isCorrect ? '✓' : '✗'}</span>
-                        `;
-                        readingGrid.appendChild(badge);
+                    shareData.reading.answers.forEach((answer, index) => {
+                        // Tính lại isCorrect từ câu trả lời thực tế
+                        const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                        if (match) {
+                            const userAnswer = match[2];
+                            const correctAnswer = correctAnswers[index + 35]; // Reading starts from Q36
+                            const isCorrect = userAnswer === correctAnswer;
+                            
+                            const badge = document.createElement('div');
+                            badge.className = `answer-badge ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`;
+                            badge.innerHTML = `
+                                ${answer.text} <span class="answer-icon">${isCorrect ? '✓' : '✗'}</span>
+                            `;
+                            readingGrid.appendChild(badge);
+                        }
                     });
                 }
                 
