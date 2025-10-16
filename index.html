@@ -3528,15 +3528,19 @@ Câu trả lời: ${rowData.answersText}
 
         // Hàm hiển thị tổng quan bài làm HSK2
         function showHSK2Feedback(fullname, email, phone, essay, prompt, allAnswers, writingAiComment, score) {
+            // Hiển thị modal trước
+            const modal = document.getElementById('hsk2FeedbackModal');
+            modal.classList.add('show');
+            
             // Kiểm tra nếu đang mở từ share link và xóa nút "Copy link"
             const urlParams = new URLSearchParams(window.location.search);
             const share = urlParams.get('share');
             const view = urlParams.get('view');
             
             if (share || view === 'feedback') {
-                // Xóa nút "Copy link" nếu đang mở từ share link
+                // Xóa nút "Copy link" trong modal HSK2 cụ thể
                 setTimeout(() => {
-                    const pdfBtn = document.querySelector('.pdf-export-btn');
+                    const pdfBtn = modal.querySelector('.pdf-export-btn');
                     if (pdfBtn) {
                         pdfBtn.remove();
                     }
