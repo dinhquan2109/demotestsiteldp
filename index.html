@@ -4317,6 +4317,7 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
             const urlParams = new URLSearchParams(window.location.search);
             const view = urlParams.get('view');
             const data = urlParams.get('data');
+            const share = urlParams.get('share');
             
             if (view === 'feedback' && data) {
                 try {
@@ -4332,6 +4333,64 @@ Ngày xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')}
                     displaySharedFeedback(shareData);
                 } catch (error) {
                     console.error('Lỗi khi decode dữ liệu:', error);
+                    alert('❌ Link chia sẻ không hợp lệ.');
+                }
+            } else if (share) {
+                try {
+                    // Ẩn toàn bộ dashboard
+                    document.querySelector('.container').style.display = 'none';
+                    
+                    // Thay đổi background body
+                    document.body.style.background = 'linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #00b894 100%)';
+                    
+                    // Parse dữ liệu share
+                    const shareData = JSON.parse(decodeURIComponent(share));
+                    
+                    // Hiển thị modal tương ứng
+                    if (shareData.type === 'hsk2') {
+                        // Tạo allAnswers object từ listening và reading data
+                        const allAnswers = {};
+                        if (shareData.listening && shareData.listening.answers) {
+                            shareData.listening.answers.forEach((answer, index) => {
+                                // Extract answer from format like "1:true✓" -> "true"
+                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                                if (match) {
+                                    allAnswers[index] = match[2];
+                                }
+                            });
+                        }
+                        if (shareData.reading && shareData.reading.answers) {
+                            shareData.reading.answers.forEach((answer, index) => {
+                                // Extract answer from format like "36:A✓" -> "A"
+                                const match = answer.text.match(/(\d+):(.+?)[✓✗]/);
+                                if (match) {
+                                    allAnswers[index + 35] = match[2];
+                                }
+                            });
+                        }
+                        
+                        // Tính điểm tổng
+                        let totalScore = 0;
+                        if (shareData.listening && shareData.listening.score) {
+                            totalScore += parseInt(shareData.listening.score) || 0;
+                        }
+                        if (shareData.reading && shareData.reading.score) {
+                            totalScore += parseInt(shareData.reading.score) || 0;
+                        }
+                        
+                        showHSK2Feedback(
+                            shareData.student.name,
+                            shareData.student.email,
+                            shareData.student.phone,
+                            '',
+                            '',
+                            allAnswers,
+                            '',
+                            totalScore
+                        );
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi parse share data:', error);
                     alert('❌ Link chia sẻ không hợp lệ.');
                 }
             }
